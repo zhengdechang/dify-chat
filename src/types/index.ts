@@ -106,7 +106,7 @@ export interface DifyChatbotProps {
   showHeader?: boolean;
   showAvatar?: boolean;
   allowFileUpload?: boolean;
-  allowedFileTypes?: string[];
+  allowedFileTypes?: string[]; // If not provided and allowFileUpload is true, defaults to ["image/png", "image/jpeg"]
   maxFileSize?: number;
   autoFocus?: boolean;
   disabled?: boolean;
@@ -147,9 +147,11 @@ export interface ChatInputProps {
   placeholder?: string;
   disabled?: boolean;
   allowFileUpload?: boolean;
-  allowedFileTypes?: string[];
+  allowedFileTypes?: string[]; // If not provided and allowFileUpload is true, defaults to ["image/png", "image/jpeg"]
   maxFileSize?: number;
   initialMessage?: string;
+  showResetButton?: boolean; // Whether to show reset button when header is hidden
+  onReset?: () => void; // Reset callback
 }
 
 export interface MessageProps {

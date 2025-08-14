@@ -1,6 +1,6 @@
 import React, { useState, useRef, KeyboardEvent, useCallback } from "react";
 import { clsx } from "clsx";
-import { ArrowUp, Paperclip, Square, X } from "lucide-react";
+import { ArrowUp, Paperclip, Square, X, RotateCcw } from "lucide-react";
 import type { ChatInputProps, DifyAttachment } from "../types";
 
 interface ExtendedChatInputProps extends ChatInputProps {
@@ -14,14 +14,20 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
   onUploadFile,
   placeholder = "Type your message...",
   disabled = false,
-  allowFileUpload = true,
-  allowedFileTypes = ["image/*", "application/pdf", ".txt", ".doc", ".docx"],
+  allowFileUpload = false,
+  allowedFileTypes,
   maxFileSize = 15 * 1024 * 1024, // 15MB
   status = "ready",
   onStop,
   autoFocus = false,
   initialMessage = "",
+  showResetButton = false,
+  onReset,
 }) => {
+  // Set default file types if allowFileUpload is true but no types specified
+  const finalAllowedFileTypes = allowFileUpload
+    ? allowedFileTypes || ["image/png", "image/jpeg"]
+    : [];
   const [message, setMessage] = useState(initialMessage);
   const [attachments, setAttachments] = useState<DifyAttachment[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -74,7 +80,7 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
         }
 
         // Validate file type
-        const isValidType = allowedFileTypes.some((type) => {
+        const isValidType = finalAllowedFileTypes.some((type) => {
           if (type.startsWith(".")) {
             return file.name.toLowerCase().endsWith(type.toLowerCase());
           }
@@ -119,7 +125,7 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
         className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
         ref={fileInputRef}
         multiple
-        accept={allowedFileTypes.join(",")}
+        accept={finalAllowedFileTypes.join(",")}
         onChange={handleFileSelect}
         tabIndex={-1}
       />
@@ -162,8 +168,20 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
           disabled={disabled}
         />
 
-        {/* File Upload Button */}
-        <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
+        {/* File Upload Button and Reset Button */}
+        <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start gap-1">
+          {showResetButton && onReset && (
+            <button
+              data-testid="reset-button"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground py-1 px-2 h-fit text-muted-foreground rounded-md button-text"
+              disabled={status !== "ready" || disabled}
+              onClick={onReset}
+              title="Reset conversation"
+              data-state="closed"
+            >
+              <RotateCcw size={14} />
+            </button>
+          )}
           {allowFileUpload && onUploadFile && (
             <button
               data-testid="attachments-button"

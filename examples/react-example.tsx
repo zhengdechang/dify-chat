@@ -75,7 +75,12 @@ export const ChatbotExample: React.FC = () => {
                 showHeader={true}
                 showAvatar={true}
                 allowFileUpload={true}
-                allowedFileTypes={["image/*", "application/pdf", ".txt"]}
+                allowedFileTypes={[
+                  "image/png",
+                  "image/jpeg",
+                  "application/pdf",
+                  ".txt",
+                ]}
                 maxFileSize={10 * 1024 * 1024} // 10MB
                 onMessage={handleMessage}
                 onError={handleError}

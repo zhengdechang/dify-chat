@@ -32,14 +32,8 @@ export const DifyChatbot = forwardRef<DifyChatbotScrollRef, DifyChatbotProps>(
       maxWidth = 400,
       showHeader = true,
       showAvatar = true,
-      allowFileUpload = true,
-      allowedFileTypes = [
-        "image/*",
-        "application/pdf",
-        ".txt",
-        ".doc",
-        ".docx",
-      ],
+      allowFileUpload = false,
+      allowedFileTypes,
       maxFileSize = 15 * 1024 * 1024,
       autoFocus = false,
       disabled = false,
@@ -50,6 +44,11 @@ export const DifyChatbot = forwardRef<DifyChatbotScrollRef, DifyChatbotProps>(
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+    // Set default file types if allowFileUpload is true but no types specified
+    const finalAllowedFileTypes = allowFileUpload
+      ? allowedFileTypes || ["image/png", "image/jpeg"]
+      : [];
     const [showScrollButton, setShowScrollButton] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -390,12 +389,14 @@ export const DifyChatbot = forwardRef<DifyChatbotScrollRef, DifyChatbotProps>(
               placeholder={placeholder}
               disabled={disabled}
               allowFileUpload={allowFileUpload}
-              allowedFileTypes={allowedFileTypes}
+              allowedFileTypes={finalAllowedFileTypes}
               maxFileSize={maxFileSize}
               autoFocus={autoFocus}
               initialMessage={initialMessage}
               status={isLoading ? "streaming" : "ready"}
               onStop={stopMessage}
+              showResetButton={!showHeader}
+              onReset={resetConversation}
             />
           </div>
         </form>
