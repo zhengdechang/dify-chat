@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DifyChatbot Scroll Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+        }
+        
+        .page-content {
+            height: 200vh; /* Make page scrollable */
+            background: linear-gradient(to bottom, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+        }
+        
+        .section {
+            height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .chatbot-container {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 400px;
+            height: 500px;
+            z-index: 1000;
+        }
+        
+        .embedded-container {
+            position: relative;
+            margin: 20px auto;
+            width: 400px;
+            height: 500px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .instructions {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 300px;
+            z-index: 1001;
+        }
+        
+        .instructions h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .instructions p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h3>Scroll Test Instructions</h3>
+        <p>• Try scrolling the page normally</p>
+        <p>• Try scrolling inside the chat area</p>
+        <p>• Chat scrolling should NOT affect page scroll</p>
+        <p>• Page should scroll normally outside chat</p>
+    </div>
+
+    <div class="page-content">
+        <div class="section" style="background: rgba(255, 107, 107, 0.8);">
+            Section 1 - Top
+        </div>
+        <div class="section" style="background: rgba(78, 205, 196, 0.8);">
+            Section 2 - Middle Top
+        </div>
+        
+        <!-- Embedded chatbot in the middle of content -->
+        <div class="embedded-container">
+            <div id="embedded-chatbot"></div>
+        </div>
+        
+        <div class="section" style="background: rgba(69, 183, 209, 0.8);">
+            Section 3 - Middle Bottom
+        </div>
+        <div class="section" style="background: rgba(150, 206, 180, 0.8);">
+            Section 4 - Bottom
+        </div>
+    </div>
+
+    <!-- Mock chatbot for testing -->
+    <div class="chatbot-container">
+        <div style="
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        ">
+            <div style="
+                padding: 15px;
+                background: #4ecdc4;
+                color: white;
+                font-weight: bold;
+                border-radius: 8px 8px 0 0;
+            ">
+                Chat Assistant (Fixed Position)
+            </div>
+            <div style="
+                flex: 1;
+                overflow-y: auto;
+                padding: 15px;
+                background: #f9f9f9;
+                overscroll-behavior: contain;
+            " onwheel="event.stopPropagation();" ontouchmove="event.stopPropagation();">
+                <div style="height: 1000px; background: linear-gradient(to bottom, #fff, #f0f0f0); padding: 20px;">
+                    <p><strong>This is a mock scrollable chat area.</strong></p>
+                    <p>Try scrolling here - it should NOT affect the page scroll.</p>
+                    <p>The key is using:</p>
+                    <ul>
+                        <li><code>overscroll-behavior: contain</code></li>
+                        <li><code>event.stopPropagation()</code> on wheel/touch events</li>
+                        <li>Fixed positioning to isolate from document flow</li>
+                    </ul>
+                    <div style="height: 200px; background: #e8f4f8; margin: 20px 0; padding: 15px; border-radius: 4px;">
+                        <p>More content to make this scrollable...</p>
+                        <p>Keep scrolling to test the isolation.</p>
+                    </div>
+                    <div style="height: 200px; background: #f0f8e8; margin: 20px 0; padding: 15px; border-radius: 4px;">
+                        <p>Even more content...</p>
+                        <p>The page behind should not scroll when you scroll here.</p>
+                    </div>
+                    <div style="height: 200px; background: #f8f0e8; margin: 20px 0; padding: 15px; border-radius: 4px;">
+                        <p>Final section of scrollable content.</p>
+                        <p>Test complete!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock embedded chatbot
+        document.getElementById('embedded-chatbot').innerHTML = `
+            <div style="
+                width: 100%;
+                height: 100%;
+                background: white;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                border: 1px solid #ddd;
+            ">
+                <div style="
+                    padding: 15px;
+                    background: #45b7d1;
+                    color: white;
+                    font-weight: bold;
+                    border-radius: 8px 8px 0 0;
+                ">
+                    Chat Assistant (Embedded)
+                </div>
+                <div style="
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 15px;
+                    background: #f9f9f9;
+                    overscroll-behavior: contain;
+                " onwheel="handleChatScroll(event);" ontouchmove="handleChatScroll(event);">
+                    <div style="height: 800px; background: linear-gradient(to bottom, #fff, #f0f0f0); padding: 20px;">
+                        <p><strong>Embedded chat with scroll isolation.</strong></p>
+                        <p>This should also NOT affect page scroll.</p>
+                        <div style="height: 150px; background: #e8f4f8; margin: 15px 0; padding: 10px; border-radius: 4px;">
+                            <p>Message 1: Testing scroll isolation...</p>
+                        </div>
+                        <div style="height: 150px; background: #f0f8e8; margin: 15px 0; padding: 10px; border-radius: 4px;">
+                            <p>Message 2: More test content...</p>
+                        </div>
+                        <div style="height: 150px; background: #f8f0e8; margin: 15px 0; padding: 10px; border-radius: 4px;">
+                            <p>Message 3: Final test message.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        function handleChatScroll(event) {
+            // Always stop propagation to prevent affecting page scroll
+            event.stopPropagation();
+            
+            const container = event.currentTarget;
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            const isAtTop = scrollTop <= 1;
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+            
+            // Only prevent default at boundaries
+            if (event.type === 'wheel') {
+                const scrollingUp = event.deltaY < 0;
+                const scrollingDown = event.deltaY > 0;
+                
+                if ((isAtTop && scrollingUp) || (isAtBottom && scrollingDown)) {
+                    event.preventDefault();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

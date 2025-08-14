@@ -1,0 +1,342 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 220 13% 9%;
+    --foreground: 210 40% 98%;
+    --card: 220 13% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 220 13% 9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 100% 70%;
+    --primary-foreground: 220 13% 9%;
+    --secondary: 215 25% 15%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 25% 15%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 215 25% 15%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 25% 20%;
+    --input: 215 25% 15%;
+    --ring: 210 100% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Dify Chatbot specific styles */
+.dify-chatbot {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark theme overrides */
+.dify-chatbot.dark {
+  color-scheme: dark;
+}
+
+.dify-chatbot.dark * {
+  border-color: hsl(var(--border));
+}
+
+/* Dark mode specific styles - only override for dark mode */
+.dify-chatbot.dark .bg-card {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+}
+
+.dify-chatbot.dark .text-card-foreground {
+  color: hsl(var(--card-foreground));
+}
+
+.dify-chatbot.dark .text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+.dify-chatbot.dark .text-foreground {
+  color: hsl(var(--foreground));
+}
+
+.dify-chatbot.dark .bg-background {
+  background-color: hsl(var(--background));
+}
+
+.dify-chatbot.dark .border-input {
+  border-color: hsl(var(--input));
+}
+
+.dify-chatbot.dark .bg-muted {
+  background-color: hsl(var(--muted));
+}
+
+.dify-chatbot.dark .hover\:bg-accent:hover {
+  background-color: hsl(var(--accent));
+}
+
+.dify-chatbot.dark .hover\:text-accent-foreground:hover {
+  color: hsl(var(--accent-foreground));
+}
+
+.dify-chatbot.dark .bg-primary {
+  background-color: hsl(var(--primary));
+}
+
+.dify-chatbot.dark .text-primary-foreground {
+  color: hsl(var(--primary-foreground));
+}
+
+.dify-chatbot.dark .hover\:bg-primary\/90:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+/* Light theme uses default Tailwind CSS variables - no custom overrides needed */
+
+/* Dark mode container overrides */
+.dify-chatbot-container.dark {
+  --primary: 210 100% 70%;
+  --secondary: 215 25% 15%;
+  --background: 220 13% 9%;
+  --foreground: 210 40% 98%;
+  --border: 215 25% 20%;
+  --card: 215 25% 15%;
+  --card-foreground: 210 40% 98%;
+  --muted: 215 25% 15%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 215 25% 20%;
+  --accent-foreground: 210 40% 98%;
+  --input: 215 25% 20%;
+}
+
+.dify-chatbot-messages {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted)) transparent;
+  /* Smooth scrolling for better UX */
+  scroll-behavior: smooth;
+  /* Touch scrolling support */
+  -webkit-overflow-scrolling: touch;
+}
+
+.dify-chatbot-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dify-chatbot-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dify-chatbot-messages::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+.dify-chatbot-messages::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground));
+}
+
+/* Basic chatbot container styles */
+.dify-chatbot-container {
+  /* Basic layout containment */
+  contain: layout style;
+}
+
+/* Animation classes */
+.dify-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.dify-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.dify-typing {
+  animation: typing 1.5s ease-in-out infinite;
+}
+
+/* Text selection highlight */
+.dify-text-selection {
+  background-color: rgba(59, 130, 246, 0.2);
+  border-radius: 2px;
+  padding: 1px 2px;
+}
+
+/* Floating chatbot positioning */
+.dify-floating-chatbot {
+  position: fixed;
+  z-index: 9999;
+}
+
+.dify-floating-chatbot.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.dify-floating-chatbot.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.dify-floating-chatbot.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.dify-floating-chatbot.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+/* Viewport fullscreen styles */
+.dify-chatbot-container.viewport-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 9999 !important;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Responsive font sizes for chatbot */
+.dify-chatbot {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Small screens (mobile) */
+@media (max-width: 640px) {
+  .dify-chatbot {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .dify-chatbot h1 {
+    font-size: 18px;
+  }
+
+  .dify-chatbot h2 {
+    font-size: 16px;
+  }
+
+  .dify-chatbot h3 {
+    font-size: 14px;
+  }
+
+  .dify-chatbot .message-text {
+    font-size: 12px;
+  }
+
+  .dify-chatbot .input-text {
+    font-size: 12px;
+  }
+
+  .dify-chatbot .button-text {
+    font-size: 11px;
+  }
+}
+
+/* Medium screens (tablet) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .dify-chatbot {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .dify-chatbot h1 {
+    font-size: 20px;
+  }
+
+  .dify-chatbot h2 {
+    font-size: 18px;
+  }
+
+  .dify-chatbot h3 {
+    font-size: 16px;
+  }
+
+  .dify-chatbot .message-text {
+    font-size: 13px;
+  }
+
+  .dify-chatbot .input-text {
+    font-size: 13px;
+  }
+
+  .dify-chatbot .button-text {
+    font-size: 12px;
+  }
+}
+
+/* Large screens (desktop) */
+@media (min-width: 1025px) {
+  .dify-chatbot {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .dify-chatbot h1 {
+    font-size: 22px;
+  }
+
+  .dify-chatbot h2 {
+    font-size: 20px;
+  }
+
+  .dify-chatbot h3 {
+    font-size: 18px;
+  }
+
+  .dify-chatbot .message-text {
+    font-size: 14px;
+  }
+
+  .dify-chatbot .input-text {
+    font-size: 14px;
+  }
+
+  .dify-chatbot .button-text {
+    font-size: 13px;
+  }
+}
