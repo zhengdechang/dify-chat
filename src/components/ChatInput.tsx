@@ -1,6 +1,6 @@
 import React, { useState, useRef, KeyboardEvent, useCallback } from "react";
 import { clsx } from "clsx";
-import { ArrowUp, Paperclip, Square, X, RotateCcw } from "lucide-react";
+import { ArrowUp, Paperclip, X, RotateCcw, CirclePause } from "lucide-react";
 import type { ChatInputProps, DifyAttachment } from "../types";
 
 interface ExtendedChatInputProps extends ChatInputProps {
@@ -206,7 +206,7 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
               title="Stop generation"
               data-state="closed"
             >
-              <Square />
+              <CirclePause />
             </button>
           ) : (
             <button
