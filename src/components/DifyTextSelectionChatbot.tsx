@@ -280,7 +280,7 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             transition={{ duration: 0.2 }}
-            className={clsx("fixed shadow-xl", {
+            className={clsx("dify-chatbot fixed shadow-xl", {
               "z-[99999]": !isFullscreen,
               "z-40": isFullscreen, // Lower z-index when fullscreen to let DifyChatbot's z-50 take precedence
             })}
@@ -289,6 +289,7 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
               top: isFullscreen ? 0 : chatbotPosition.y,
               width: isFullscreen ? "100vw" : maxWidth,
               height: isFullscreen ? "100vh" : maxHeight,
+              zIndex: 999999,
             }}
           >
             <div className="relative h-full">

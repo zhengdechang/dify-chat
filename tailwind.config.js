@@ -4,44 +4,44 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "hsl(var(--pfchat-border))",
+        input: "hsl(var(--pfchat-input))",
+        ring: "hsl(var(--pfchat-ring))",
+        background: "hsl(var(--pfchat-background))",
+        foreground: "hsl(var(--pfchat-foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "hsl(var(--pfchat-primary))",
+          foreground: "hsl(var(--pfchat-primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "hsl(var(--pfchat-secondary))",
+          foreground: "hsl(var(--pfchat-secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "hsl(var(--pfchat-destructive))",
+          foreground: "hsl(var(--pfchat-destructive-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "hsl(var(--pfchat-muted))",
+          foreground: "hsl(var(--pfchat-muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "hsl(var(--pfchat-accent))",
+          foreground: "hsl(var(--pfchat-accent-foreground))",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "hsl(var(--pfchat-popover))",
+          foreground: "hsl(var(--pfchat-popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "hsl(var(--pfchat-card))",
+          foreground: "hsl(var(--pfchat-card-foreground))",
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "var(--pfchat-radius)",
+        md: "calc(var(--pfchat-radius) - 2px)",
+        sm: "calc(var(--pfchat-radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {

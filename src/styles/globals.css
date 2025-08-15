@@ -1,65 +1,64 @@
 
-.dify-chatbot{
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* 将 CSS 变量定义在 :root 中，确保全局可用 */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --radius: 0.75rem;
+    /* 亮色主题变量 */
+    --pfchat-background: 0 0% 100%;
+    --pfchat-foreground: 240 10% 3.9%;
+    --pfchat-card: 0 0% 100%;
+    --pfchat-card-foreground: 240 10% 3.9%;
+    --pfchat-popover: 0 0% 100%;
+    --pfchat-popover-foreground: 240 10% 3.9%;
+    --pfchat-primary: 240 5.9% 10%;
+    --pfchat-primary-foreground: 0 0% 98%;
+    --pfchat-secondary: 240 4.8% 95.9%;
+    --pfchat-secondary-foreground: 240 5.9% 10%;
+    --pfchat-muted: 240 4.8% 95.9%;
+    --pfchat-muted-foreground: 240 3.8% 46.1%;
+    --pfchat-accent: 240 4.8% 95.9%;
+    --pfchat-accent-foreground: 240 5.9% 10%;
+    --pfchat-destructive: 0 84.2% 60.2%;
+    --pfchat-destructive-foreground: 0 0% 98%;
+    --pfchat-border: 240 5.9% 90%;
+    --pfchat-input: 240 5.9% 90%;
+    --pfchat-ring: 240 10% 3.9%;
+    --pfchat-radius: 0.75rem;
   }
 
   .dark {
-    --background: 220 13% 9%;
-    --foreground: 210 40% 98%;
-    --card: 220 13% 9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 220 13% 9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 100% 70%;
-    --primary-foreground: 220 13% 9%;
-    --secondary: 215 25% 15%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 215 25% 15%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 215 25% 15%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 215 25% 20%;
-    --input: 215 25% 15%;
-    --ring: 210 100% 70%;
+    /* 暗色主题变量 */
+    --pfchat-background: 220 13% 9%;
+    --pfchat-foreground: 210 40% 98%;
+    --pfchat-card: 220 13% 9%;
+    --pfchat-card-foreground: 210 40% 98%;
+    --pfchat-popover: 220 13% 9%;
+    --pfchat-popover-foreground: 210 40% 98%;
+    --pfchat-primary: 210 100% 70%;
+    --pfchat-primary-foreground: 220 13% 9%;
+    --pfchat-secondary: 215 25% 15%;
+    --pfchat-secondary-foreground: 210 40% 98%;
+    --pfchat-muted: 215 25% 15%;
+    --pfchat-muted-foreground: 215 20% 65%;
+    --pfchat-accent: 215 25% 15%;
+    --pfchat-accent-foreground: 210 40% 98%;
+    --pfchat-destructive: 0 62.8% 30.6%;
+    --pfchat-destructive-foreground: 210 40% 98%;
+    --pfchat-border: 215 25% 20%;
+    --pfchat-input: 215 25% 15%;
+    --pfchat-ring: 210 100% 70%;
   }
-}
 
-@layer base {
   * {
-    border-color: hsl(var(--border));
+    border-color: hsl(var(--pfchat-border));
   }
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: hsl(var(--pfchat-background));
+    color: hsl(var(--pfchat-foreground));
   }
-}
 }
 
 /* Dify Chatbot specific styles */
@@ -74,80 +73,80 @@
 }
 
 .dify-chatbot.dark * {
-  border-color: hsl(var(--border));
+  border-color: hsl(var(--pfchat-border));
 }
 
 /* Dark mode specific styles - only override for dark mode */
 .dify-chatbot.dark .bg-card {
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
+  background-color: hsl(var(--pfchat-card));
+  color: hsl(var(--pfchat-card-foreground));
 }
 
 .dify-chatbot.dark .text-card-foreground {
-  color: hsl(var(--card-foreground));
+  color: hsl(var(--pfchat-card-foreground));
 }
 
 .dify-chatbot.dark .text-muted-foreground {
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--pfchat-muted-foreground));
 }
 
 .dify-chatbot.dark .text-foreground {
-  color: hsl(var(--foreground));
+  color: hsl(var(--pfchat-foreground));
 }
 
 .dify-chatbot.dark .bg-background {
-  background-color: hsl(var(--background));
+  background-color: hsl(var(--pfchat-background));
 }
 
 .dify-chatbot.dark .border-input {
-  border-color: hsl(var(--input));
+  border-color: hsl(var(--pfchat-input));
 }
 
 .dify-chatbot.dark .bg-muted {
-  background-color: hsl(var(--muted));
+  background-color: hsl(var(--pfchat-muted));
 }
 
 .dify-chatbot.dark .hover\:bg-accent:hover {
-  background-color: hsl(var(--accent));
+  background-color: hsl(var(--pfchat-accent));
 }
 
 .dify-chatbot.dark .hover\:text-accent-foreground:hover {
-  color: hsl(var(--accent-foreground));
+  color: hsl(var(--pfchat-accent-foreground));
 }
 
 .dify-chatbot.dark .bg-primary {
-  background-color: hsl(var(--primary));
+  background-color: hsl(var(--pfchat-primary));
 }
 
 .dify-chatbot.dark .text-primary-foreground {
-  color: hsl(var(--primary-foreground));
+  color: hsl(var(--pfchat-primary-foreground));
 }
 
 .dify-chatbot.dark .hover\:bg-primary\/90:hover {
-  background-color: hsl(var(--primary) / 0.9);
+  background-color: hsl(var(--pfchat-primary) / 0.9);
 }
 
 /* Light theme uses default Tailwind CSS variables - no custom overrides needed */
 
 /* Dark mode container overrides */
 .dify-chatbot-container.dark {
-  --primary: 210 100% 70%;
-  --secondary: 215 25% 15%;
-  --background: 220 13% 9%;
-  --foreground: 210 40% 98%;
-  --border: 215 25% 20%;
-  --card: 215 25% 15%;
-  --card-foreground: 210 40% 98%;
-  --muted: 215 25% 15%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 215 25% 20%;
-  --accent-foreground: 210 40% 98%;
-  --input: 215 25% 20%;
+  --pfchat-primary: 210 100% 70%;
+  --pfchat-secondary: 215 25% 15%;
+  --pfchat-background: 220 13% 9%;
+  --pfchat-foreground: 210 40% 98%;
+  --pfchat-border: 215 25% 20%;
+  --pfchat-card: 215 25% 15%;
+  --pfchat-card-foreground: 210 40% 98%;
+  --pfchat-muted: 215 25% 15%;
+  --pfchat-muted-foreground: 215 20% 65%;
+  --pfchat-accent: 215 25% 20%;
+  --pfchat-accent-foreground: 210 40% 98%;
+  --pfchat-input: 215 25% 20%;
 }
 
 .dify-chatbot-messages {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted)) transparent;
+  scrollbar-color: hsl(var(--pfchat-muted)) transparent;
   /* Smooth scrolling for better UX */
   scroll-behavior: smooth;
   /* Touch scrolling support */
@@ -163,12 +162,12 @@
 }
 
 .dify-chatbot-messages::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted));
+  background-color: hsl(var(--pfchat-muted));
   border-radius: 3px;
 }
 
 .dify-chatbot-messages::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--pfchat-muted-foreground));
 }
 
 /* Basic chatbot container styles */
@@ -200,7 +199,7 @@
 /* Floating chatbot positioning */
 .dify-floating-chatbot {
   position: fixed;
-  z-index: 9999;
+  z-index: 9999999999;
 }
 
 .dify-floating-chatbot.bottom-right {
@@ -236,7 +235,7 @@
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
-  z-index: 9999 !important;
+  z-index: 99999999999 !important;
 }
 
 body {
