@@ -93,7 +93,11 @@ export class DifyApi {
 
     const response = await fetch(`${this.config.baseUrl}/chat-messages`, {
       method: "POST",
-      headers: this.getHeaders(),
+      headers: {
+        ...this.getHeaders(),
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
       body: JSON.stringify(body),
     });
 
@@ -117,11 +121,16 @@ export class DifyApi {
         const { done, value } = await reader.read();
         if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
+        // 立即解码，不等待完整块
+        const chunk = decoder.decode(value, { stream: true });
+        buffer += chunk;
 
-        for (const line of lines) {
+        // 处理所有完整的行
+        let newlineIndex;
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          const line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+
           if (line.trim() === "") continue;
 
           if (line.startsWith("data: ")) {
@@ -141,9 +150,11 @@ export class DifyApi {
                 this.currentTaskId = data.task_id;
               }
 
+              // 立即调用回调，减少延迟
               onChunk?.(data);
             } catch (e) {
               // Failed to parse SSE data, skip this line
+              console.warn("Failed to parse SSE data:", line);
             }
           } else if (line.startsWith("event: ")) {
             // Handle event lines if needed

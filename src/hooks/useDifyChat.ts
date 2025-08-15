@@ -59,21 +59,30 @@ export const useDifyChat = ({
   const updateLastMessage = useCallback(
     (content: string) => {
       setMessages((prev) => {
-        const newMessages = [...prev];
-        const lastMessage = newMessages[newMessages.length - 1];
-        if (lastMessage && lastMessage.role === "assistant") {
-          // Create a new message object to ensure React detects the change
+        const lastMessage = prev[prev.length - 1];
+        if (
+          lastMessage &&
+          lastMessage.role === "assistant" &&
+          lastMessage.content !== content
+        ) {
+          // Only update if content actually changed
           const updatedMessage = {
             ...lastMessage,
             content,
-            timestamp: Date.now(), // Update timestamp to ensure change detection
+            timestamp: Date.now(),
           };
+
+          const newMessages = [...prev];
           newMessages[newMessages.length - 1] = updatedMessage;
 
-          // Trigger onMessage callback for streaming updates
-          onMessage?.(updatedMessage);
+          // Use requestAnimationFrame to batch updates and improve performance
+          requestAnimationFrame(() => {
+            onMessage?.(updatedMessage);
+          });
+
+          return newMessages;
         }
-        return newMessages;
+        return prev;
       });
     },
     [onMessage]
