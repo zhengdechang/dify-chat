@@ -167,7 +167,7 @@ const HighlightedPre = memo(
       };
 
       highlightCode();
-    }, [children, className, language, props]);
+    }, [children, language]);
 
     const fallbackContent = (
       <pre
