@@ -1,5 +1,5 @@
 {
-  "name": "@codedevin/dify-cchat",
+  "name": "@codedevin/dify-chat",
   "version": "1.0.1-dev",
   "description": "A beautiful and configurable chatbot widget for Dify integration with multiple display modes",
   "main": "dist/index.umd.js",

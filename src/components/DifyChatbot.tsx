@@ -376,7 +376,7 @@ export const DifyChatbot = forwardRef<DifyChatbotScrollRef, DifyChatbotProps>(
               <div className="absolute left-1/2 bottom-28 -translate-x-1/2 z-50">
                 <button
                   onClick={scrollToBottom}
-                  className="inline-flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10 rounded-full"
+                  className="inline-flex items-center justify-center border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8 rounded-full"
                 >
                   <ArrowDown className="h-4 w-4" />
                 </button>
