@@ -5,6 +5,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
+import { createPortal } from "react-dom";
 import { clsx } from "clsx";
 import { useDifyChat } from "../hooks/useDifyChat";
 import { Message, TypingIndicator } from "./Message";
@@ -240,20 +241,33 @@ export const DifyChatbot = forwardRef<DifyChatbotScrollRef, DifyChatbotProps>(
     }, [isFullscreen]);
 
     const containerStyle: React.CSSProperties = {
-      height:
-        !isFullscreen && displayMode === "embedded" ? maxHeight : undefined,
-      width: !isFullscreen && displayMode === "embedded" ? maxWidth : undefined,
       ...style,
+      ...(isFullscreen
+        ? {
+            zIndex: 999999,
+            width: "100vw",
+            height: "100vh",
+            maxHeight: "none",
+            maxWidth: "none",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }
+        : {
+            maxHeight: maxHeight,
+            maxWidth: maxWidth,
+          }),
     };
 
-    return (
+    const chatbotContent = (
       <div
         ref={containerRef}
         className={clsx(
           "dify-chatbot dify-chatbot-container flex flex-col min-w-0 bg-background p-[2px]",
           {
-            "h-screen w-screen fixed inset-0 z-50": isFullscreen,
-            "border border-border rounded-lg":
+            "h-full border border-border rounded-lg":
               !isFullscreen && displayMode === "embedded",
             dark: isDarkTheme,
           },
@@ -402,6 +416,14 @@ export const DifyChatbot = forwardRef<DifyChatbotScrollRef, DifyChatbotProps>(
         </form>
       </div>
     );
+
+    // 如果是全屏模式，使用 Portal 渲染到 body
+    if (isFullscreen) {
+      return createPortal(chatbotContent, document.body);
+    }
+
+    // 非全屏模式，正常渲染
+    return chatbotContent;
   }
 );
 

@@ -1,7 +1,20 @@
 import React, { useState, useRef, KeyboardEvent, useCallback } from "react";
 import { clsx } from "clsx";
-import { ArrowUp, Paperclip, X, RotateCcw, CirclePause } from "lucide-react";
+import { ArrowUp, Paperclip, X, RotateCcw } from "lucide-react";
 import type { ChatInputProps, DifyAttachment } from "../types";
+
+// 实心方形图标组件
+const FilledSquare: React.FC<{ size?: number }> = ({ size = 14 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="6" y="6" width="12" height="12" rx="1" ry="1" />
+  </svg>
+);
 
 interface ExtendedChatInputProps extends ChatInputProps {
   status?: "ready" | "submitted" | "streaming";
@@ -161,7 +174,7 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
           onChange={handleTextareaChange}
           onKeyDown={handleKeyPress}
           className={clsx(
-            "flex w-full border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl bg-muted pb-10 text-sm text-foreground input-text"
+            "flex w-full border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl bg-muted pb-10 text-sm text-foreground input-text overflow-y-auto"
           )}
           rows={2}
           autoFocus={autoFocus}
@@ -201,12 +214,12 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
           {status === "submitted" || status === "streaming" ? (
             <button
               data-testid="stop-button"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-1.5 h-fit border dark:border-zinc-600 button-text"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none  [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-1.5 h-fit border dark:border-zinc-600 button-text"
               onClick={onStop}
               title="Stop generation"
               data-state="closed"
             >
-              <CirclePause />
+              <FilledSquare size={14} />
             </button>
           ) : (
             <button
@@ -226,7 +239,6 @@ export const ChatInput: React.FC<ExtendedChatInputProps> = ({
           )}
         </div>
       </div>
-
       {/* Upload Status */}
       {isUploading && (
         <div className="px-4 text-sm text-muted-foreground">

@@ -50,6 +50,8 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
   });
   const [showChatbot, setShowChatbot] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isTransitioningFullscreen, setIsTransitioningFullscreen] =
+    useState(false);
 
   // Track showChatbot changes
   useEffect(() => {
@@ -124,8 +126,8 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
     (event: MouseEvent) => {
       const target = event.target as Node;
 
-      // Don't close if in fullscreen mode
-      if (isFullscreen) {
+      // Don't close if in fullscreen mode or transitioning
+      if (isFullscreen || isTransitioningFullscreen) {
         return;
       }
 
@@ -139,7 +141,26 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
       setIsVisible(false);
       setShowChatbot(false);
     },
-    [isFullscreen]
+    [isFullscreen, isTransitioningFullscreen]
+  );
+
+  // Handle fullscreen change from DifyChatbot
+  const handleFullscreenChange = useCallback(
+    (fullscreen: boolean) => {
+      setIsTransitioningFullscreen(true);
+      setIsFullscreen(fullscreen);
+
+      // Ensure chatbot stays open when exiting fullscreen
+      if (!fullscreen && !showChatbot) {
+        setShowChatbot(true);
+      }
+
+      // Clear transition state after a short delay
+      setTimeout(() => {
+        setIsTransitioningFullscreen(false);
+      }, 100);
+    },
+    [showChatbot]
   );
 
   useEffect(() => {
@@ -242,7 +263,7 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
   }
 
   return (
-    <>
+    <div className="dify-chatbot dify-text-selection-chatbot">
       {/* Selection Trigger Button */}
       <AnimatePresence>
         {isVisible && !showChatbot && (
@@ -251,7 +272,7 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed z-[99998] pointer-events-none"
+            className="fixed pointer-events-none"
             style={{
               left: position.x - 25,
               top: position.y + position.height + 5,
@@ -273,24 +294,30 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
 
       {/* Chatbot Window */}
       <AnimatePresence>
-        {showChatbot && (
+        {(showChatbot || isFullscreen) && (
           <motion.div
             ref={chatbotRef}
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             transition={{ duration: 0.2 }}
-            className={clsx("dify-chatbot fixed shadow-xl", {
-              "z-[99999]": !isFullscreen,
-              "z-40": isFullscreen, // Lower z-index when fullscreen to let DifyChatbot's z-50 take precedence
+            className={clsx("dify-chatbot", {
+              "fixed shadow-xl": !isFullscreen,
             })}
-            style={{
-              left: isFullscreen ? 0 : chatbotPosition.x,
-              top: isFullscreen ? 0 : chatbotPosition.y,
-              width: isFullscreen ? "100vw" : maxWidth,
-              height: isFullscreen ? "100vh" : maxHeight,
-              zIndex: 999999,
-            }}
+            style={
+              isFullscreen
+                ? {
+                    // 在全屏模式下，让 DifyChatbot 内部处理所有样式
+                    zIndex: 999999,
+                  }
+                : {
+                    left: chatbotPosition.x,
+                    top: chatbotPosition.y,
+                    width: maxWidth,
+                    height: maxHeight,
+                    zIndex: 999999,
+                  }
+            }
           >
             <div className="relative h-full">
               {/* Chatbot */}
@@ -315,8 +342,8 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
                   style={style}
                   onMessage={handleMessageWithContext}
                   onError={onError}
-                  maxHeight={maxHeight}
-                  maxWidth={maxWidth}
+                  maxHeight={isFullscreen ? undefined : maxHeight}
+                  maxWidth={isFullscreen ? undefined : maxWidth}
                   showHeader={showHeader}
                   showAvatar={showAvatar}
                   allowFileUpload={allowFileUpload}
@@ -325,13 +352,13 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
                   autoFocus={autoFocus}
                   disabled={disabled}
                   initialMessage={`Please explain this text: "${selectedText}"`}
-                  onFullscreenChange={setIsFullscreen}
+                  onFullscreenChange={handleFullscreenChange}
                 />
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };

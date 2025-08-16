@@ -45,7 +45,7 @@ export const DifyFloatingChatbot: React.FC<FloatingChatbotProps> = ({
   };
 
   const getPositionClasses = () => {
-    return "dify-chatbot dify-floating-chatbot fixed z-[99999]";
+    return "dify-chatbot dify-floating-chatbot ";
   };
 
   const getPositionStyle = (): React.CSSProperties => {
@@ -58,30 +58,35 @@ export const DifyFloatingChatbot: React.FC<FloatingChatbotProps> = ({
           bottom: 20 + offsetY,
           right: 20 + offsetX,
           zIndex: 999999999,
+          position: "fixed",
         };
       case "bottom-left":
         return {
           bottom: 20 + offsetY,
           left: 20 + offsetX,
           zIndex: 999999999,
+          position: "fixed",
         };
       case "top-right":
         return {
           top: 20 + offsetY,
           right: 20 + offsetX,
           zIndex: 999999999,
+          position: "fixed",
         };
       case "top-left":
         return {
           top: 20 + offsetY,
           left: 20 + offsetX,
           zIndex: 999999999,
+          position: "fixed",
         };
       default:
         return {
           bottom: 20,
           right: 20,
           zIndex: 999999999,
+          position: "fixed",
         };
     }
   };
