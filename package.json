@@ -1,6 +1,6 @@
 {
   "name": "@codedevin/dify-chat",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "A beautiful and configurable chatbot widget for Dify integration with multiple display modes",
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",

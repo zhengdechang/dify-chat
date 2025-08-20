@@ -84,32 +84,32 @@ export const Message: React.FC<MessageProps> = ({
             <div className="flex flex-row gap-2 items-start">
               <div
                 data-testid="message-content"
-                className={clsx("flex flex-col gap-4 message-text", {
+                className={clsx("flex flex-col gap-4 message-text w-full", {
                   "bg-muted  px-3 py-2 rounded-xl": message.role === "user",
                   "": message.role === "assistant",
                 })}
               >
                 <Markdown>{message.content}</Markdown>
+
+                {/* Message Actions - Only for assistant messages */}
+                {message.role === "assistant" && (
+                  <div className="flex flex-row gap-2 opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 mt-2">
+                    <button
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground py-1 px-2 h-fit text-muted-foreground"
+                      onClick={handleCopy}
+                      title={copied ? "Copied!" : "Copy message"}
+                      data-state="closed"
+                    >
+                      {copied ? (
+                        <Check className="h-4 w-4 " />
+                      ) : (
+                        <Clipboard className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* Message Actions - Only for assistant messages */}
-            {message.role === "assistant" && (
-              <div className="flex flex-row gap-2">
-                <button
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground py-1 px-2 h-fit text-muted-foreground"
-                  onClick={handleCopy}
-                  title={copied ? "Copied!" : "Copy message"}
-                  data-state="closed"
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 " />
-                  ) : (
-                    <Clipboard className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </motion.div>

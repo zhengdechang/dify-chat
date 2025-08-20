@@ -139,6 +139,8 @@ export interface TextSelectionChatbotProps
   // Custom icon and text
   triggerIcon?: React.ReactNode;
   triggerText?: string;
+  // Custom initial message for hover mode
+  hoverInitialMessage?: string;
 }
 
 export interface ChatInputProps {

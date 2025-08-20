@@ -23,8 +23,8 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
   style,
   onMessage,
   onError,
-  maxHeight = 400,
-  maxWidth = 350,
+  maxHeight = 500,
+  maxWidth = 450,
   showHeader = true,
   showAvatar = true,
   allowFileUpload = false, // Usually disabled for text selection
@@ -39,8 +39,11 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
   targetAttribute,
   triggerIcon,
   triggerText = "Ask AI",
+  initialMessage,
+  hoverInitialMessage,
 }) => {
   const [selectedText, setSelectedText] = useState("");
+  const [originalSelectedText, setOriginalSelectedText] = useState(""); // 保存原始选中文本
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState<SelectionPosition>({
     x: 0,
@@ -52,11 +55,24 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isTransitioningFullscreen, setIsTransitioningFullscreen] =
     useState(false);
+  const [hoveredKeyword, setHoveredKeyword] = useState("");
+  const [isHoverMode, setIsHoverMode] = useState(false);
+  const [hoverCustomMessage, setHoverCustomMessage] = useState("");
+  const hideTimeoutRef = useRef<number | null>(null);
 
   // Track showChatbot changes
   useEffect(() => {
     // showChatbot state changed
   }, [showChatbot]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
   const chatbotRef = useRef<HTMLDivElement>(null);
 
   const handleSelection = useCallback(() => {
@@ -69,8 +85,13 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
 
       // Handle text selection // Debug log
 
-      // Since we only listen to selection events when chatbot is closed,
-      // we don't need to check if selection is within chatbot
+      // Check if selection is within the chatbot - if so, ignore it
+      if (chatbotRef.current && selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        if (chatbotRef.current.contains(range.commonAncestorContainer)) {
+          return;
+        }
+      }
 
       if (
         text.length >= minSelectionLength &&
@@ -92,6 +113,7 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
               // Selection is not within a target element, ignore it
               setIsVisible(false);
               setSelectedText("");
+              setOriginalSelectedText("");
               return;
             }
           }
@@ -104,23 +126,101 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
             height: rect.height,
           });
           setSelectedText(text);
+          setOriginalSelectedText(text); // 保存原始文本
           setIsVisible(true);
+
           onSelectionChange?.(text);
         }
-      } else {
-        // Clear selection if it doesn't meet criteria
+      } else if (text.length === 0) {
+        // Clear if no selection detected
         setIsVisible(false);
         setSelectedText("");
+        setOriginalSelectedText("");
       }
-    }, 10);
+    }, 50); // Increased delay to prevent rapid firing
   }, [
     enabled,
     minSelectionLength,
     maxSelectionLength,
     onSelectionChange,
     targetAttribute,
-    showChatbot,
   ]);
+
+  const handleMouseEnter = useCallback(
+    (event: MouseEvent) => {
+      if (!enabled || showChatbot) return;
+
+      // Clear any pending hide timeout
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
+
+      const target = event.target as Element;
+      const keywordElement = target.closest("[data-pageflux-keyword]");
+      const askAiButton = target.closest('[data-testid="ask-ai-button"]');
+
+      // If hovering over the Ask AI button, keep it visible
+      if (askAiButton && isHoverMode) {
+        return;
+      }
+
+      if (keywordElement) {
+        const keyword =
+          keywordElement.getAttribute("data-pageflux-keyword") ||
+          keywordElement.textContent?.trim() ||
+          "";
+        const customHoverMessage =
+          keywordElement.getAttribute("hover-initmessage");
+        const rect = keywordElement.getBoundingClientRect();
+
+        setPosition({
+          x: rect.left + rect.width / 2,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height,
+        });
+        setHoveredKeyword(keyword);
+        setSelectedText(keyword);
+        setOriginalSelectedText(keyword); // 保存原始文本
+        setIsHoverMode(true);
+        setIsVisible(true);
+
+        // Store the custom hover message for later use
+        setHoverCustomMessage(customHoverMessage || "");
+
+        onSelectionChange?.(keyword);
+      }
+    },
+    [enabled, showChatbot, onSelectionChange, isHoverMode]
+  );
+
+  const handleMouseLeave = useCallback(
+    (event: MouseEvent) => {
+      if (!enabled || showChatbot || !isHoverMode) return;
+
+      const target = event.target as Element;
+      const relatedTarget = (event as any).relatedTarget as Element;
+
+      // If moving to the Ask AI button, don't hide
+      if (relatedTarget?.closest('[data-testid="ask-ai-button"]')) {
+        return;
+      }
+
+      // If leaving a keyword element, set a delay before hiding
+      if (target.closest("[data-pageflux-keyword]")) {
+        hideTimeoutRef.current = window.setTimeout(() => {
+          setIsVisible(false);
+          setIsHoverMode(false);
+          setHoveredKeyword("");
+          setSelectedText("");
+          setHoverCustomMessage("");
+          // Don't clear originalSelectedText - preserve it for potential chatbot use
+        }, 100); // 100ms delay to allow moving to button
+      }
+    },
+    [enabled, showChatbot, isHoverMode]
+  );
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
@@ -132,48 +232,81 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
       }
 
       // Don't close if clicking on the chatbot or the "Ask AI" button
-      if (
-        (chatbotRef.current && chatbotRef.current.contains(target)) ||
-        (target as Element)?.closest('[data-testid="ask-ai-button"]')
-      ) {
+      const isAskAiButton = (target as Element)?.closest(
+        '[data-testid="ask-ai-button"]'
+      );
+      const isChatbot =
+        chatbotRef.current && chatbotRef.current.contains(target);
+
+      if (isChatbot || isAskAiButton) {
         return;
       }
+
+      // Clear UI states when clicking outside, but preserve selected text
       setIsVisible(false);
-      setShowChatbot(false);
+
+      // Don't close chatbot if in fullscreen mode
+      if (!isFullscreen) {
+        setShowChatbot(false);
+      }
+
+      // Only clear hover-related states, but preserve original selected text
+      if (isHoverMode) {
+        setIsHoverMode(false);
+        setHoveredKeyword("");
+        setHoverCustomMessage("");
+        // Only clear current selected text if it was from hover mode, keep original
+        setSelectedText("");
+        // Don't clear originalSelectedText - keep it for potential reuse
+      }
+
+      // Clear any pending timeouts
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
     },
-    [isFullscreen, isTransitioningFullscreen]
+    [isFullscreen, isTransitioningFullscreen, isHoverMode]
   );
 
   // Handle fullscreen change from DifyChatbot
-  const handleFullscreenChange = useCallback(
-    (fullscreen: boolean) => {
-      setIsTransitioningFullscreen(true);
-      setIsFullscreen(fullscreen);
+  const handleFullscreenChange = useCallback((fullscreen: boolean) => {
+    setIsTransitioningFullscreen(true);
+    setIsFullscreen(fullscreen);
 
-      // Ensure chatbot stays open when exiting fullscreen
-      if (!fullscreen && !showChatbot) {
-        setShowChatbot(true);
-      }
+    // Always ensure chatbot is open when in fullscreen mode
+    setShowChatbot(true);
 
-      // Clear transition state after a short delay
-      setTimeout(() => {
-        setIsTransitioningFullscreen(false);
-      }, 100);
-    },
-    [showChatbot]
-  );
+    // Clear transition state after a short delay
+    setTimeout(() => {
+      setIsTransitioningFullscreen(false);
+    }, 100);
+  }, []);
 
   useEffect(() => {
-    if (enabled && !showChatbot) {
-      document.addEventListener("selectionchange", handleSelection);
+    if (enabled && !showChatbot && !isFullscreen) {
+      // Only listen for text selection when chatbot is closed
       document.addEventListener("mouseup", handleSelection);
 
       return () => {
-        document.removeEventListener("selectionchange", handleSelection);
         document.removeEventListener("mouseup", handleSelection);
       };
     }
-  }, [enabled, handleSelection, showChatbot]);
+  }, [enabled, handleSelection, showChatbot, isFullscreen]);
+
+  // Add hover event listeners for data-pageflux-keyword elements
+  useEffect(() => {
+    if (enabled && !showChatbot && !isFullscreen) {
+      // Only listen for hover events when chatbot is closed
+      document.addEventListener("mouseover", handleMouseEnter);
+      document.addEventListener("mouseout", handleMouseLeave);
+
+      return () => {
+        document.removeEventListener("mouseover", handleMouseEnter);
+        document.removeEventListener("mouseout", handleMouseLeave);
+      };
+    }
+  }, [enabled, showChatbot, isFullscreen, handleMouseEnter, handleMouseLeave]);
 
   // Separate effect for click outside to avoid conflicts
   useEffect(() => {
@@ -188,9 +321,21 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
   const handleOpenChatbot = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Preserve the current originalSelectedText before opening chatbot
+    const currentOriginalText = originalSelectedText || selectedText;
+
     // Use setTimeout to ensure this happens after any other event handlers
     setTimeout(() => {
       setShowChatbot(true);
+      // Keep the current text when opening chatbot from hover mode
+      if (isHoverMode && hoveredKeyword) {
+        setSelectedText(hoveredKeyword);
+        setOriginalSelectedText(hoveredKeyword);
+      } else {
+        // Ensure originalSelectedText is preserved
+        setOriginalSelectedText(currentOriginalText);
+      }
     }, 0);
   };
 
@@ -199,27 +344,36 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
     const viewportHeight = window.innerHeight;
     const margin = 20;
 
+    // Ensure we have valid values
+    const safeMaxWidth = maxWidth || 350;
+    const safeMaxHeight = maxHeight || 400;
+    const safePosition = {
+      x: position.x || 0,
+      y: position.y || 0,
+      height: position.height || 0,
+    };
+
     // Calculate initial position
-    let x = position.x - maxWidth / 2;
-    let y = position.y + position.height + 10;
+    let x = safePosition.x - safeMaxWidth / 2;
+    let y = safePosition.y + safePosition.height + 10;
 
     // Ensure horizontal position is within viewport
-    x = Math.max(margin, Math.min(x, viewportWidth - maxWidth - margin));
+    x = Math.max(margin, Math.min(x, viewportWidth - safeMaxWidth - margin));
 
     // Check if there's enough space below
-    if (y + maxHeight > viewportHeight - margin) {
+    if (y + safeMaxHeight > viewportHeight - margin) {
       // Try positioning above the selection
-      const yAbove = position.y - maxHeight - 10;
+      const yAbove = safePosition.y - safeMaxHeight - 10;
       if (yAbove >= margin) {
         y = yAbove;
       } else {
         // If neither above nor below works, center vertically
-        y = Math.max(margin, (viewportHeight - maxHeight) / 2);
+        y = Math.max(margin, (viewportHeight - safeMaxHeight) / 2);
       }
     }
 
     // Final safety check - ensure position is within viewport
-    y = Math.max(margin, Math.min(y, viewportHeight - maxHeight - margin));
+    y = Math.max(margin, Math.min(y, viewportHeight - safeMaxHeight - margin));
 
     // Chatbot position calculated
     return { x, y };
@@ -253,7 +407,7 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
     // Add selected text as context to the message
     const enhancedMessage = {
       ...message,
-      context: selectedText,
+      context: originalSelectedText || selectedText,
     };
     onMessage?.(enhancedMessage);
   };
@@ -280,13 +434,37 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
           >
             <button
               onClick={handleOpenChatbot}
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md py-2 px-4 h-fit pointer-events-auto shadow-lg"
+              onMouseEnter={() => {
+                // Clear any pending hide timeout when hovering over button
+                if (hideTimeoutRef.current) {
+                  clearTimeout(hideTimeoutRef.current);
+                  hideTimeoutRef.current = null;
+                }
+              }}
+              onMouseLeave={() => {
+                // Hide after a short delay when leaving the button
+                hideTimeoutRef.current = window.setTimeout(() => {
+                  setIsVisible(false);
+                  setIsHoverMode(false);
+                  setHoveredKeyword("");
+                  setHoverCustomMessage("");
+                  // Only clear selectedText if it was from hover mode, keep originalSelectedText
+                  if (isHoverMode) {
+                    setSelectedText("");
+                  }
+                  // Don't clear originalSelectedText - preserve it for chatbot
+                }, 100);
+              }}
+              className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md py-2 px-3 h-fit pointer-events-auto shadow-lg"
               title="Ask about selected text"
               data-testid="ask-ai-button"
               data-state="closed"
+              style={{ fontFamily: "auto" }}
             >
-              {triggerIcon || <MessageCircle className="h-4 w-4" />}
-              <span className="text-xs">{triggerText}</span>
+              {triggerIcon || (
+                <MessageCircle className="h-4 w-4 flex-shrink-0" />
+              )}
+              <span className="text-sm leading-none">{triggerText}</span>
             </button>
           </motion.div>
         )}
@@ -308,6 +486,11 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
               isFullscreen
                 ? {
                     // 在全屏模式下，让 DifyChatbot 内部处理所有样式
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
                     zIndex: 999999,
                   }
                 : {
@@ -327,13 +510,18 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
                     ...config,
                     inputs: {
                       ...config.inputs,
-                      selected_text: selectedText,
+                      selected_text: originalSelectedText || selectedText,
                     },
                   }}
                   theme={theme}
                   displayMode="embedded"
-                  placeholder={`Ask about: "${selectedText?.substring(0, 50)}${
-                    selectedText && selectedText.length > 50 ? "..." : ""
+                  placeholder={`Ask about: "${(
+                    originalSelectedText || selectedText
+                  )?.substring(0, 50)}${
+                    (originalSelectedText || selectedText) &&
+                    (originalSelectedText || selectedText).length > 50
+                      ? "..."
+                      : ""
                   }"`}
                   title={title}
                   subtitle={subtitle}
@@ -351,7 +539,23 @@ export const DifyTextSelectionChatbot: React.FC<TextSelectionChatbotProps> = ({
                   maxFileSize={maxFileSize}
                   autoFocus={autoFocus}
                   disabled={disabled}
-                  initialMessage={`Please explain this text: "${selectedText}"`}
+                  initialMessage={
+                    isHoverMode && hoverCustomMessage
+                      ? `${hoverCustomMessage} "${
+                          originalSelectedText || selectedText
+                        }"`
+                      : isHoverMode && hoverInitialMessage
+                      ? `${hoverInitialMessage} "${
+                          originalSelectedText || selectedText
+                        }"`
+                      : initialMessage
+                      ? `${initialMessage} "${
+                          originalSelectedText || selectedText
+                        }"`
+                      : `Please explain this text: "${
+                          originalSelectedText || selectedText
+                        }"`
+                  }
                   onFullscreenChange={handleFullscreenChange}
                 />
               </div>
